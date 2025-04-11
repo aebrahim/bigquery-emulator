@@ -6,6 +6,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 ENV CGO_ENABLED=1
 ENV CXX=clang++
+ENV CXXFLAGS="-fPIC"
 
 WORKDIR /build
 # We copy the depenencies first to leverage Docker cache
