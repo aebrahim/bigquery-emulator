@@ -22,15 +22,16 @@ ENV CGO_CPPFLAGS="-fPIC"
 ENV CGO_CXXFLAGS="-fPIC"
 
 RUN go build -x -o /go/bin/bigquery-emulator \
-    -ldflags "-linkmode=external -extldflags -static" \
+    # We removed this to fix static link bugs on arm.
+    -ldflags "-s -w -linkmode=external" \
     ./cmd/bigquery-emulator
 RUN rm -rf /tmp/*
 
-FROM scratch
+FROM debian:${DEBIAN_VERSION}
 
 COPY --from=cgo_builder /go/bin/bigquery-emulator /bin/bigquery-emulator
-COPY --from=cgo_builder /tmp /tmp
-COPY --from=cgo_builder /usr/share/zoneinfo/ /usr/share/zoneinfo
+# COPY --from=cgo_builder /tmp /tmp
+# COPY --from=cgo_builder /usr/share/zoneinfo/ /usr/share/zoneinfo
 
 WORKDIR /work
 
