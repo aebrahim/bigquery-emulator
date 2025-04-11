@@ -4,9 +4,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get -y install --no-install-recommends clang
 
-ENV CGO_ENABLED=1
-ENV CXX=clang++
-
 WORKDIR /build
 # We copy the depenencies first to leverage Docker cache
 COPY go.mod go.sum ./
@@ -16,6 +13,13 @@ COPY cmd ./cmd
 COPY internal ./internal
 COPY server ./server
 COPY types ./types
+
+ENV CGO_ENABLED=1
+ENV CC=clang
+ENV CFLAGS="-fPIC"
+ENV CXX=clang++
+ENV CXXFLAGS="-fPIC"
+
 RUN go build -o /go/bin/bigquery-emulator \
     -ldflags "-linkmode=external -extldflags -static" \
     ./cmd/bigquery-emulator
